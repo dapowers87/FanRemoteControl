@@ -112,7 +112,12 @@ try:
 			print("Pointing to Bedroom")
 			
 			
-		response = int(input('Enter 1 to pulse, 2 to switch target: '))
+		response = int(input('Enter \n\t1 to toggle light\n\t2 to switch target '+
+		'\n\t3 to turn off fan'+
+		'\n\t4 to set fan to low'+
+		'\n\t5 to set fan to med' + 
+		'\n\t6 to set fan to high'+
+		'\n\tChoice: '))
 		
 		if response == 1:
 			PulseOn()
