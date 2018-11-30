@@ -36,12 +36,12 @@ def on_disconnect(client, userdata, flags, rc=0):
     Connected = False
 
 def on_message(client, userdata, message):
-	print('topic: {}, payload: {}'.format(message.topic, message.payload))
+	print('\ntopic: {}, payload: {}'.format(message.topic, message.payload))
 	if message.topic == "fanControl/BedroomFan/light/set":
-		print("bedroom light toggle received")
+		#print("bedroom light toggle received")
 		ToggleBedroom()
 	elif message.topic == "fanControl/OfficeFan/light/set":
-		print("office light toggle received")
+		#print("office light toggle received")
 		ToggleOffice()
 	elif message.topic == "fanControl/OfficeFan/fan/set":
 		SetFanSpeed(message.payload, True)
@@ -118,6 +118,15 @@ try:
 			PulseOn()
 		elif response == 2:
 			pointToOffice = not pointToOffice
+		elif response == 3: 
+			TogglePin(offPin)
+		elif response == 4: 
+			TogglePin(lowPin)
+		elif response == 5: 
+			TogglePin(medPin)
+		elif response == 6: 
+			TogglePin(highPin)			
+			
 			
 		if pointToOffice:
 			gpio.output(pointPin, True)
