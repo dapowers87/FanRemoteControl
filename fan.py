@@ -71,7 +71,9 @@ def connect_to_mqtt():
     client.subscribe("fanControl/#")
 
 def reconnect_to_mqtt():
+    print("Connection lost to MQTT. Reconnecting...")
     reattemptConnect = True
+    global Connected
     while Connected != True:    #Wait for connection
         try:
             if(reattemptConnect == True):
@@ -85,7 +87,7 @@ def reconnect_to_mqtt():
         time.sleep(1)
         
         if(Connected == True):
-            print("exiting reconnect loop")
+            print("Reconnected... Exiting reconnect loop")
 
 def SetFanSpeed(speed, isOffice):
     if isOffice:
@@ -130,36 +132,36 @@ try:
         if(Connected <> True):
             reconnect_to_mqtt()
         
-        if pointToOffice:
-            print("Pointing to Office")
-        else:
-            print("Pointing to Bedroom")            
+        #if pointToOffice:
+        #    print("Pointing to Office")
+        #else:
+        #    print("Pointing to Bedroom")            
             
-        response = int(input('Enter \n\t1 to toggle light\n\t2 to switch target '+
-        '\n\t3 to turn off fan'+
-        '\n\t4 to set fan to low'+
-        '\n\t5 to set fan to med' + 
-        '\n\t6 to set fan to high'+
-        '\n\tChoice: '))
+       # response = int(input('Enter \n\t1 to toggle light\n\t2 to switch target '+
+       # '\n\t3 to turn off fan'+
+       # '\n\t4 to set fan to low'+
+       # '\n\t5 to set fan to med' + 
+       #'\n\t6 to set fan to high'+
+       # '\n\tChoice: '))
         
-        if response == 1:
-            PulseOn()
-        elif response == 2:
-            pointToOffice = not pointToOffice
-        elif response == 3: 
-            TogglePin(offPin)
-        elif response == 4: 
-            TogglePin(lowPin)
-        elif response == 5: 
-            TogglePin(medPin)
-        elif response == 6: 
-            TogglePin(highPin)          
+        #if response == 1:
+         #   PulseOn()
+        #elf response == 2:
+        #    pointToOffice = not pointToOffice
+        #elif response == 3: 
+        #    TogglePin(offPin)
+        #elif response == 4: 
+        #    TogglePin(lowPin)
+        #elif response == 5: 
+        #    TogglePin(medPin)
+        #elif response == 6: 
+        #    TogglePin(highPin)          
             
             
-        if pointToOffice:
-            gpio.output(pointPin, True)
-        else:
-            gpio.output(pointPin, False)
+        ##if pointToOffice:
+         #   gpio.output(pointPin, True)
+        #else:
+        #    gpio.output(pointPin, False)
             
 finally:
     gpio.cleanup()
