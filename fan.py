@@ -88,6 +88,7 @@ def reconnect_to_mqtt():
         
         if(Connected == True):
             print("Reconnected... Exiting reconnect loop")
+     client.subscribe("fanControl/#")
 
 def SetFanSpeed(speed, isOffice):
     if isOffice:
