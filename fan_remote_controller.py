@@ -91,7 +91,6 @@ try:
         if not m_client.connected:
             m_client.reconnect_to_mqtt()            
         
-        print(office_fan.fan_speed_state.name)
         m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
         m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
         
