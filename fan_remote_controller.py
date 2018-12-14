@@ -79,6 +79,13 @@ def message_parser(message):
         bedroom_fan.fan_speed = speed
         bedroom_fan.fan_speed_state = FanSpeedState.ON
 
+def publish_fan_state():
+    m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
+    m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
+    
+    m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
+    m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
+
 try:
     initialize_pins()
     
@@ -91,11 +98,7 @@ try:
         if not m_client.connected:
             m_client.reconnect_to_mqtt()            
         
-        m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
-        m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
-        
-        m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
-        m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
+        publish_fan_state()        
         
         time.sleep(1)
                 
