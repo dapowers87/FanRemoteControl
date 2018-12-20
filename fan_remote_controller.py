@@ -20,13 +20,7 @@ def message_parser(message):
     def print_message(message):
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("{}: topic: '{}', payload: '{}'".format(now, message.topic, message.payload))
-        
-    def toggle_fan_state(fan):
-        if fan.fanSpeedState == FanSpeedState.OFF:
-            fan.fan_speed_state = FanSpeedState.ON
-        else:
-            fan.fan_speed_state = FanSpeedState.OFF   
-            
+                    
     def get_fan_speed_enum(message):
         if message.lower() == "low":
             return FanSpeed.LOW
@@ -47,24 +41,21 @@ def message_parser(message):
     elif message.topic == "fanControl/OfficeFan/fan/on/set":
         print_message(message)
         
-        if office_fan.fan_speed_state == FanSpeedState.ON:
+        if message.payload == "OFF":
             turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
         else:
             set_fan_speed(office_fan.fan_speed, True)
-            office_fan.fan_speed_state = FanSpeedState.ON
-        toggle_fan_state(office_fan)        
+            office_fan.fan_speed_state = FanSpeedState.ON           
     elif message.topic == "fanControl/BedroomFan/fan/on/set":
         print_message(message)
         
-        if bedroom_fan.fan_speed_state == FanSpeedState.ON:
+        if message.payload == "OFF":
             turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
         else:
             set_fan_speed(bedroom_fan.fan_speed, False)
             bedroom_fan.fan_speed_state = FanSpeedState.ON
-        toggle_fan_state(bedroom_fan) 
-
     #Fan Speed messages
     elif message.topic == "fanControl/OfficeFan/fan/speed/set":
         print_message(message)
