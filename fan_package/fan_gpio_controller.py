@@ -17,6 +17,7 @@ FAN_LOW_PIN = 25
 FAN_MED_PIN = 12
 FAN_HIGH_PIN = 13
 
+queue = []
 
 def initialize_pins():
     gpio.setmode(gpio.BCM)
@@ -36,14 +37,22 @@ def initialize_pins():
     gpio.output(FAN_MED_PIN, True)
     gpio.output(FAN_HIGH_PIN, True)
     
-def trigger_button(selected_pin, is_office):
-    """ Method used to simulate a button press on the remote    
-    """
-    set_fan(is_office) 
-    
-    gpio.output(selected_pin, False)
-    time.sleep(0.5)
-    gpio.output(selected_pin, True)
+def queue_button(selected_pin, is_office):
+    """ Method used to queue a button press simulation on the remote    
+    """      
+    queue.append((selected_pin, is_office))
+
+def process_queue():    
+    while True:        
+        if len(queue) > 0:        
+            selected_pin, is_office = queue.pop(0)
+            
+            set_fan(is_office)  
+            
+            gpio.output(selected_pin, False)
+            time.sleep(0.5)
+            gpio.output(selected_pin, True)
+            time.sleep(0.25)
     
 
 def set_fan(is_office):
@@ -59,23 +68,23 @@ def set_fan(is_office):
 def toggle_light(is_office):
     """ Method used to toggle the fan light
     """       
-    trigger_button(LIGHT_TOGGLE_PIN, is_office)
+    queue_button(LIGHT_TOGGLE_PIN, is_office)
     
 def set_fan_speed(fanSpeed, is_office):
     """ Method used to set the fan speed (low, med, high) 
     NOT ON/OFF
     """  
     if fanSpeed == FanSpeed.LOW:
-        trigger_button(FAN_LOW_PIN, is_office)
+        queue_button(FAN_LOW_PIN, is_office)
     elif fanSpeed == FanSpeed.MEDIUM:
-        trigger_button(FAN_MED_PIN, is_office)
+        queue_button(FAN_MED_PIN, is_office)
     elif fanSpeed == FanSpeed.HIGH:
-        trigger_button(FAN_HIGH_PIN, is_office)
+        queue_button(FAN_HIGH_PIN, is_office)
 
 def turn_off_fan(is_office):
     """ Method used to set the fan On/Off state
     """
-    trigger_button(FAN_OFF_PIN, is_office)
+    queue_button(FAN_OFF_PIN, is_office)
     
 def cleanup_gpio():
     gpio.cleanup()

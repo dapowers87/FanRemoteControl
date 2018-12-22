@@ -4,6 +4,7 @@ from fan_package.fan_gpio_controller import *
 from fan_package.fan import *
 from fan_package.fan_enums import *
 from fan_package.mqtt_controller import *
+from threading import Thread
 
 def set_fan_state(isOffice, state):
     global office_fan
@@ -79,6 +80,10 @@ def publish_fan_state():
 
 try:
     initialize_pins()
+    
+    thread = Thread(target = process_queue)
+    thread.daemon = True
+    thread.start()
     
     office_fan = Fan()
     bedroom_fan = Fan()
