@@ -17,11 +17,11 @@ def set_fan_state(isOffice, state):
 def message_parser(message):
     #global office_fan
     #global bedroom_fan
-    
+
     def print_message(message):
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("{}: topic: '{}', payload: '{}'".format(now, message.topic, message.payload))
-                    
+
     def get_fan_speed_enum(message):
         if message.lower() == "low":
             return FanSpeed.LOW
@@ -29,7 +29,7 @@ def message_parser(message):
             return FanSpeed.MEDIUM
         elif message.lower() == "high":
             return FanSpeed.HIGH
-            
+
     #Fan Light On/Off messages
     if message.topic == "fanControl/OfficeFan/light/set":
         print_message(message)
@@ -37,20 +37,20 @@ def message_parser(message):
     elif message.topic == "fanControl/BedroomFan/light/set":
         print_message(message)
         toggle_light(False)
-            
+
     #Fan On/Off messages
     elif message.topic == "fanControl/OfficeFan/fan/on/set":
         print_message(message)
-        
+
         if message.payload == "OFF":
             turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
         else:
             set_fan_speed(office_fan.fan_speed, True)
-            office_fan.fan_speed_state = FanSpeedState.ON           
+            office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/on/set":
         print_message(message)
-        
+
         if message.payload == "OFF":
             turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
@@ -72,31 +72,35 @@ def message_parser(message):
         bedroom_fan.fan_speed_state = FanSpeedState.ON
 
 def publish_fan_state():
-    m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
-    m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
-    
-    m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
-    m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
+    while True:
+        m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
+        m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
+
+        m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
+        m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
+        
+        time.sleep(1)
 
 try:
     initialize_pins()
-    
-    thread = Thread(target = process_queue)
-    thread.daemon = True
-    thread.start()
-    
+
+    buttonThread = Thread(target = process_queue)
+    buttonThread.daemon = True
+    buttonThread.start()
+
     office_fan = Fan()
     bedroom_fan = Fan()
 
     m_client = MqttController(message_parser)
     m_client.connect_to_mqtt()
+    
+    publishThread = Thread(target = publish_fan_state)
+    publishThread.daemon = True
+    publishThread.start()
+    
     while True:
         if not m_client.connected:
-            m_client.reconnect_to_mqtt()            
-        
-        publish_fan_state()        
-        
+            m_client.reconnect_to_mqtt()   
         time.sleep(1)
-                
 finally:
     cleanup_gpio()
