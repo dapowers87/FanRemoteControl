@@ -1,6 +1,6 @@
 import time
 import datetime
-from fan_package.fan_gpio_controller import *
+from fan_package import fan_gpio_controller
 from fan_package.fan import *
 from fan_package.fan_enums import *
 from fan_package.mqtt_controller import *
@@ -82,14 +82,14 @@ def publish_fan_state():
         time.sleep(1)
 
 try:
-    initialize_pins()
-
-    buttonThread = Thread(target = process_queue)
-    buttonThread.daemon = True
-    buttonThread.start()
-
     office_fan = Fan()
     bedroom_fan = Fan()
+    
+    fan_gpio_controller.initialize_pins()
+
+    buttonThread = Thread(target = fan_gpio_controller.process_queue)
+    buttonThread.daemon = True
+    buttonThread.start()
 
     m_client = MqttController(message_parser)
     m_client.connect_to_mqtt()
@@ -103,4 +103,4 @@ try:
             m_client.reconnect_to_mqtt()   
         time.sleep(1)
 finally:
-    cleanup_gpio()
+    fan_gpio_controller.cleanup_gpio()
