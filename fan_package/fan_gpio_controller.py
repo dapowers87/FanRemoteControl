@@ -1,5 +1,5 @@
 import RPi.GPIO as gpio
-from fan_enums import *
+from .fan_enums import *
 import time
 import logging 
 
