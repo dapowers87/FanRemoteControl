@@ -18,6 +18,8 @@ def message_parser(message):
     #global office_fan
     #global bedroom_fan
 
+    message.payload = message.payload.decode('utf-8')
+    
     def print_message(message):
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("{}: topic: '{}', payload: '{}'".format(now, message.topic, message.payload))
@@ -33,41 +35,42 @@ def message_parser(message):
     #Fan Light On/Off messages
     if message.topic == "fanControl/OfficeFan/light/set":
         print_message(message)
-        toggle_light(True)
+        fan_gpio_controller.toggle_light(True)
     elif message.topic == "fanControl/BedroomFan/light/set":
         print_message(message)
-        toggle_light(False)
+        fan_gpio_controller.toggle_light(False)
 
     #Fan On/Off messages
     elif message.topic == "fanControl/OfficeFan/fan/on/set":
         print_message(message)
 
         if message.payload == "OFF":
-            turn_off_fan(True)
+            fan_gpio_controller.turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
         else:
-            set_fan_speed(office_fan.fan_speed, True)
+            fan_gpio_controller.set_fan_speed(office_fan.fan_speed, True)
             office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/on/set":
         print_message(message)
 
         if message.payload == "OFF":
-            turn_off_fan(False)
+            fan_gpio_controller.turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
         else:
-            set_fan_speed(bedroom_fan.fan_speed, False)
+            print("test3")
+            fan_gpio_controller.set_fan_speed(bedroom_fan.fan_speed, False)
             bedroom_fan.fan_speed_state = FanSpeedState.ON
     #Fan Speed messages
     elif message.topic == "fanControl/OfficeFan/fan/speed/set":
         print_message(message)
         speed = get_fan_speed_enum(message.payload)
-        set_fan_speed(speed, True)
+        fan_gpio_controller.set_fan_speed(speed, True)
         office_fan.fan_speed = speed
         office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/speed/set":
         print_message(message)
         speed = get_fan_speed_enum(message.payload)
-        set_fan_speed(speed, False)
+        fan_gpio_controller.set_fan_speed(speed, False)
         bedroom_fan.fan_speed = speed
         bedroom_fan.fan_speed_state = FanSpeedState.ON
 

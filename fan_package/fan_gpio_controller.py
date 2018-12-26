@@ -45,10 +45,10 @@ def queue_button(selected_pin, is_office):
 
 def process_queue():
     while True:
+        print(len(queue))
         try:
             if len(queue) > 0:                
                 selected_pin, is_office = queue.pop(0)
-
                 set_fan(is_office)
 
                 gpio.output(selected_pin, False)
