@@ -3,6 +3,9 @@ from .fan_enums import *
 import time
 import logging 
 
+office_fan_function = None
+bedroom_fan_function = None
+
 #Pins currently being used to control the remote
 
 #Pin attached to the light toggle button
@@ -18,6 +21,10 @@ FAN_LOW_PIN = 25
 FAN_MED_PIN = 12
 FAN_HIGH_PIN = 13
 
+#Input buttons to fix bad light state
+BEDROOM_LIGHT_OVERRIDE = 20
+OFFICE_LIGHT_OVERRIDE = 21
+
 queue = []
 
 def initialize_pins():
@@ -29,6 +36,11 @@ def initialize_pins():
     gpio.setup(FAN_LOW_PIN, gpio.OUT)
     gpio.setup(FAN_MED_PIN, gpio.OUT)
     gpio.setup(FAN_HIGH_PIN, gpio.OUT)
+    gpio.setup(BEDROOM_LIGHT_OVERRIDE, gpio.IN, pull_up_down=gpio.PUD_DOWN)
+    gpio.setup(OFFICE_LIGHT_OVERRIDE, gpio.IN, pull_up_down=gpio.PUD_DOWN)
+    
+    gpio.add_event_detect(BEDROOM_LIGHT_OVERRIDE, gpio.RISING, callback=bedroom_fan_function, bouncetime=300)
+    gpio.add_event_detect(OFFICE_LIGHT_OVERRIDE, gpio.RISING, callback=office_fan_function, bouncetime=300)
 
     #Remote is triggered with a low signal, set all high
     gpio.output(LIGHT_TOGGLE_PIN, True)
@@ -36,7 +48,7 @@ def initialize_pins():
     gpio.output(FAN_OFF_PIN, True)
     gpio.output(FAN_LOW_PIN, True)
     gpio.output(FAN_MED_PIN, True)
-    gpio.output(FAN_HIGH_PIN, True)
+    gpio.output(FAN_HIGH_PIN, True)    
 
 def queue_button(selected_pin, is_office):
     """ Method used to queue a button press simulation on the remote

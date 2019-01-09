@@ -35,10 +35,16 @@ def message_parser(message):
     #Fan Light On/Off messages
     if message.topic == "fanControl/OfficeFan/light/set":
         print_message(message)
-        fan_gpio_controller.toggle_light(True)
+        
+        if message.payload == "ON" and office_fan.fan_light == FanLight.OFF or message.payload == "OFF" and office_fan.fan_light == FanLight.ON: 
+            fan_gpio_controller.toggle_light(True)
+            toggle_fan_light_state(office_fan)            
     elif message.topic == "fanControl/BedroomFan/light/set":
         print_message(message)
-        fan_gpio_controller.toggle_light(False)
+        
+        if message.payload == "ON" and bedroom_fan.fan_light == FanLight.OFF or message.payload == "OFF" and bedroom_fan.fan_light == FanLight.ON: 
+            fan_gpio_controller.toggle_light(False)
+            toggle_fan_light_state(bedroom_fan)
 
     #Fan On/Off messages
     elif message.topic == "fanControl/OfficeFan/fan/on/set":
@@ -57,7 +63,6 @@ def message_parser(message):
             fan_gpio_controller.turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
         else:
-            print("test3")
             fan_gpio_controller.set_fan_speed(bedroom_fan.fan_speed, False)
             bedroom_fan.fan_speed_state = FanSpeedState.ON
     #Fan Speed messages
@@ -82,14 +87,31 @@ def publish_fan_state():
         m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
         m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
         
+        m_client.publish("fanControl/OfficeFan/fan/light/state", office_fan.fan_light.name)
+        m_client.publish("fanControl/BedroomFan/fan/light/state", bedroom_fan.fan_light.name)        
         time.sleep(1)
+
+def toggle_fan_light_state(fan):
+    if fan.fan_light == FanLight.ON:
+        fan.fan_light = FanLight.OFF
+    else:
+        fan.fan_light = FanLight.ON
+    
+def office_fan_light_state_override(channel):
+    toggle_fan_light_state(office_fan)
+
+def bedroom_fan_light_state_override(channel):
+    toggle_fan_light_state(bedroom_fan)
 
 try:
     office_fan = Fan()
     bedroom_fan = Fan()
     
+    fan_gpio_controller.bedroom_fan_function = bedroom_fan_light_state_override
+    fan_gpio_controller.office_fan_function = office_fan_light_state_override
+    
     fan_gpio_controller.initialize_pins()
-
+    
     buttonThread = Thread(target = fan_gpio_controller.process_queue)
     buttonThread.daemon = True
     buttonThread.start()
