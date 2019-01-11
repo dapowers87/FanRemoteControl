@@ -10,4 +10,4 @@ This project is to control a Hampton Bay DL-4112S-01 remote in order to operate 
 
 ### Usage
 
-Attach the pins as shown in the image. You can update the exact pins you use by updating the pin variables at the top of fan_package\fan_gpio_controller.py. 
+Attach the pins as shown in the image. You can update the exact pins you use by updating the pin variables at the top of `fan_package\fan_gpio_controller.py`. 
