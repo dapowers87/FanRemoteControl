@@ -59,7 +59,7 @@ class MqttController:
             if timeout > 60:
                 timeout = 60
 
-            if(connected == True):
+            if(self.connected == True):
                 print("Reconnected...")
         self.set_subscription()
 

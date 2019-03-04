@@ -6,6 +6,8 @@ from fan_package.fan_enums import *
 from fan_package.mqtt_controller import *
 from threading import Thread
 
+print("Fan remote controller")
+
 def set_fan_state(isOffice, state):
     global office_fan
     global bedroom_fan
