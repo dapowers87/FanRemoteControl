@@ -6,6 +6,9 @@ import logging
 office_fan_function = None
 bedroom_fan_function = None
 
+#Button press length
+BUTTON_PRESS_LEN = 0.4
+
 #Pins currently being used to control the remote
 
 #Pin attached to the light toggle button
@@ -63,7 +66,7 @@ def process_queue():
                 set_fan(is_office)
 
                 gpio.output(selected_pin, False)
-                time.sleep(0.5)
+                time.sleep(BUTTON_PRESS_LEN)
                 gpio.output(selected_pin, True)
         except Exception as ex:
             logging.exception(ex)
