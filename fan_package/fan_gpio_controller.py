@@ -16,8 +16,8 @@ LIGHT_TOGGLE_PIN = 16
 
 #Pin attached to the DIP on the remote.
 #This tells the remote which fan to signal
-OFFICE_DIP_PIN = 23 #26
-BEDROOM_DIP_PIN = 26#23
+OFFICE_DIP_PIN = 23
+BEDROOM_DIP_PIN = 26
 
 #Pins attached to the fan speed states
 FAN_OFF_PIN = 6
