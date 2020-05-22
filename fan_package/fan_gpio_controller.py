@@ -16,8 +16,8 @@ LIGHT_TOGGLE_PIN = 16
 
 #Pin attached to the DIP on the remote.
 #This tells the remote which fan to signal
-DIP_PIN = 26
-DIP2_PIN = 23
+OFFICE_DIP_PIN = 23 #26
+BEDROOM_DIP_PIN = 26#23
 
 #Pins attached to the fan speed states
 FAN_OFF_PIN = 6
@@ -35,8 +35,8 @@ def initialize_pins():
     gpio.setmode(gpio.BCM)
 
     gpio.setup(LIGHT_TOGGLE_PIN, gpio.OUT)
-    gpio.setup(DIP_PIN, gpio.OUT)
-    gpio.setup(DIP2_PIN, gpio.OUT)
+    gpio.setup(OFFICE_DIP_PIN, gpio.OUT)
+    gpio.setup(BEDROOM_DIP_PIN, gpio.OUT)
     gpio.setup(FAN_OFF_PIN, gpio.OUT)
     gpio.setup(FAN_LOW_PIN, gpio.OUT)
     gpio.setup(FAN_MED_PIN, gpio.OUT)
@@ -49,8 +49,8 @@ def initialize_pins():
 
     #Remote is triggered with a low signal, set all high
     gpio.output(LIGHT_TOGGLE_PIN, True)
-    gpio.output(DIP_PIN, True)
-    gpio.output(DIP2_PIN, True)
+    gpio.output(OFFICE_DIP_PIN, True)
+    gpio.output(BEDROOM_DIP_PIN, True)
     gpio.output(FAN_OFF_PIN, True)
     gpio.output(FAN_LOW_PIN, True)
     gpio.output(FAN_MED_PIN, True)
@@ -68,11 +68,9 @@ def process_queue():
                 selected_pin, is_office = queue.pop(0)
                 set_fan(is_office)
                 
-                set_safety_dip_pin(True)
                 gpio.output(selected_pin, False)
                 time.sleep(BUTTON_PRESS_LEN)
                 gpio.output(selected_pin, True)
-                set_safety_dip_pin(False)
                 
         except Exception as ex:
             logging.exception(ex)
@@ -85,18 +83,12 @@ def set_fan(is_office):
     False points to the bedroom fan
     """
     if is_office:
-        gpio.output(DIP_PIN, True)
+        gpio.output(BEDROOM_DIP_PIN, True)
+        gpio.output(OFFICE_DIP_PIN, False)
     else:
-        gpio.output(DIP_PIN, False)
-        
-    time.sleep(0.25) #Give time to set
-    
-def set_safety_dip_pin(state):
-    if state:
-        gpio.output(DIP2_PIN, True)
-    else:
-        gpio.output(DIP2_PIN, False)
-        
+        gpio.output(BEDROOM_DIP_PIN, False)
+        gpio.output(OFFICE_DIP_PIN, True)
+               
     time.sleep(0.25) #Give time to set
 
 def toggle_light(is_office):

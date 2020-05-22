@@ -56,8 +56,9 @@ def message_parser(message):
             fan_gpio_controller.turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
         else:
-            fan_gpio_controller.set_fan_speed(office_fan.fan_speed, True)
-            office_fan.fan_speed_state = FanSpeedState.ON
+            if office_fan.fan_speed_state == FanSpeedState.OFF:
+                fan_gpio_controller.set_fan_speed(office_fan.fan_speed, True)
+                office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/on/set":
         print_message(message)
 
@@ -65,8 +66,9 @@ def message_parser(message):
             fan_gpio_controller.turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
         else:
-            fan_gpio_controller.set_fan_speed(bedroom_fan.fan_speed, False)
-            bedroom_fan.fan_speed_state = FanSpeedState.ON
+            if bedroom_fan.fan_speed_state == FanSpeedState.OFF:
+                fan_gpio_controller.set_fan_speed(bedroom_fan.fan_speed, False)
+                bedroom_fan.fan_speed_state = FanSpeedState.ON
     #Fan Speed messages
     elif message.topic == "fanControl/OfficeFan/fan/speed/set":
         print_message(message)
