@@ -97,10 +97,10 @@ def message_parser(message):
     #Fan Light Flip messages
     elif message.topic == "fanControl/FlipBedroom":
         print_message(message)
-        fan_gpio_controller.toggle_light(True)
+        toggle_fan_light_state(bedroom_fan)
     elif message.topic == "fanControl/FlipOffice":
         print_message(message)
-        fan_gpio_controller.toggle_light(False)
+        toggle_fan_light_state(office_fan)   
 
 def publish_fan_state():
     while True:
