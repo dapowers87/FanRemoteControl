@@ -72,16 +72,24 @@ def message_parser(message):
     #Fan Speed messages
     elif message.topic == "fanControl/OfficeFan/fan/speed/set":
         print_message(message)
-        speed = get_fan_speed_enum(message.payload)
-        fan_gpio_controller.set_fan_speed(speed, True)
-        office_fan.fan_speed = speed
-        office_fan.fan_speed_state = FanSpeedState.ON
+        if message.payload == "off":
+            fan_gpio_controller.turn_off_fan(True)
+            office_fan.fan_speed_state = FanSpeedState.OFF
+        else:
+            speed = get_fan_speed_enum(message.payload)
+            fan_gpio_controller.set_fan_speed(speed, True)
+            office_fan.fan_speed = speed
+            office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/speed/set":
         print_message(message)
-        speed = get_fan_speed_enum(message.payload)
-        fan_gpio_controller.set_fan_speed(speed, False)
-        bedroom_fan.fan_speed = speed
-        bedroom_fan.fan_speed_state = FanSpeedState.ON
+        if message.payload == "off":
+            fan_gpio_controller.turn_off_fan(False)
+            bedroom_fan.fan_speed_state = FanSpeedState.OFF
+        else:
+            speed = get_fan_speed_enum(message.payload)
+            fan_gpio_controller.set_fan_speed(speed, False)
+            bedroom_fan.fan_speed = speed
+            bedroom_fan.fan_speed_state = FanSpeedState.ON
 
 def publish_fan_state():
     while True:

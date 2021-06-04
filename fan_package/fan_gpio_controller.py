@@ -7,7 +7,7 @@ office_fan_function = None
 bedroom_fan_function = None
 
 #Button press length
-BUTTON_PRESS_LEN = 0.4
+BUTTON_PRESS_LEN = 0.2
 
 #Pins currently being used to control the remote
 
