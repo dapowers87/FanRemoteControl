@@ -5,10 +5,9 @@ class FanSpeedState(Enum):
     ON = 1
 
 class FanSpeed(Enum):
-    OFF = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
+    LOW = 0
+    MEDIUM = 1
+    HIGH = 2
 
 class FanLight(Enum):
     OFF = 0

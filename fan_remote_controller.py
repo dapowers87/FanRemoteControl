@@ -27,9 +27,7 @@ def message_parser(message):
         print("{}: topic: '{}', payload: '{}'".format(now, message.topic, message.payload))
 
     def get_fan_speed_enum(message):
-        if message == "0":
-            return FanSpeed.OFF
-        elif message == "1":
+        if message == "1":
             return FanSpeed.LOW
         elif message == "2":
             return FanSpeed.MEDIUM
@@ -77,7 +75,6 @@ def message_parser(message):
         if message.payload == "0":
             fan_gpio_controller.turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
-            office_fan.fan_speed = FanSpeed.OFF
         else:
             speed = get_fan_speed_enum(message.payload)
             fan_gpio_controller.set_fan_speed(speed, True)
@@ -88,7 +85,6 @@ def message_parser(message):
         if message.payload == "0":
             fan_gpio_controller.turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
-            bedroom_fan.fan_speed = FanSpeed.OFF
         else:
             speed = get_fan_speed_enum(message.payload)
             fan_gpio_controller.set_fan_speed(speed, False)
