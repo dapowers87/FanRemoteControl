@@ -27,11 +27,13 @@ def message_parser(message):
         print("{}: topic: '{}', payload: '{}'".format(now, message.topic, message.payload))
 
     def get_fan_speed_enum(message):
-        if message.lower() == "low":
+        if message == "0":
+            return FanSpeed.OFF
+        elif message == "1":
             return FanSpeed.LOW
-        elif message.lower() == "medium":
+        elif message == "2":
             return FanSpeed.MEDIUM
-        elif message.lower() == "high":
+        elif message == "3":
             return FanSpeed.HIGH
 
     #Fan Light On/Off messages
@@ -72,9 +74,10 @@ def message_parser(message):
     #Fan Speed messages
     elif message.topic == "fanControl/OfficeFan/fan/speed/set":
         print_message(message)
-        if message.payload == "off":
+        if message.payload == "0":
             fan_gpio_controller.turn_off_fan(True)
             office_fan.fan_speed_state = FanSpeedState.OFF
+            office_fan.fan_speed = FanSpeed.OFF
         else:
             speed = get_fan_speed_enum(message.payload)
             fan_gpio_controller.set_fan_speed(speed, True)
@@ -82,9 +85,10 @@ def message_parser(message):
             office_fan.fan_speed_state = FanSpeedState.ON
     elif message.topic == "fanControl/BedroomFan/fan/speed/set":
         print_message(message)
-        if message.payload == "off":
+        if message.payload == "0":
             fan_gpio_controller.turn_off_fan(False)
             bedroom_fan.fan_speed_state = FanSpeedState.OFF
+            bedroom_fan.fan_speed = FanSpeed.OFF
         else:
             speed = get_fan_speed_enum(message.payload)
             fan_gpio_controller.set_fan_speed(speed, False)
@@ -100,15 +104,23 @@ def message_parser(message):
         toggle_fan_light_state(bedroom_fan)
     elif message.topic == "fanControl/FlipOffice":
         print_message(message)
-        toggle_fan_light_state(office_fan)   
+        toggle_fan_light_state(office_fan)
+        
+def get_fan_speed_number(fan_speed):
+        if fan_speed == FanSpeed.LOW:
+            return 1
+        elif fan_speed == FanSpeed.MEDIUM:
+            return 2
+        elif fan_speed == FanSpeed.HIGH:
+            return 3
 
 def publish_fan_state():
     while True:
         m_client.publish("fanControl/OfficeFan/fan/on/state", office_fan.fan_speed_state.name)
         m_client.publish("fanControl/BedroomFan/fan/on/state", bedroom_fan.fan_speed_state.name)
 
-        m_client.publish("fanControl/OfficeFan/fan/speed/state", office_fan.fan_speed.name.lower())
-        m_client.publish("fanControl/BedroomFan/fan/speed/state", bedroom_fan.fan_speed.name.lower())
+        m_client.publish("fanControl/OfficeFan/fan/speed/state", get_fan_speed_number(office_fan.fan_speed))
+        m_client.publish("fanControl/BedroomFan/fan/speed/state", get_fan_speed_number(bedroom_fan.fan_speed))
         
         m_client.publish("fanControl/OfficeFan/fan/light/state", office_fan.fan_light.name)
         m_client.publish("fanControl/BedroomFan/fan/light/state", bedroom_fan.fan_light.name)        
