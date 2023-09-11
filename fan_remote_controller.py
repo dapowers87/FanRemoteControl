@@ -90,10 +90,6 @@ def message_parser(message):
             fan_gpio_controller.set_fan_speed(speed, False)
             bedroom_fan.fan_speed = speed
             bedroom_fan.fan_speed_state = FanSpeedState.ON
-        speed = get_fan_speed_enum(message.payload)
-        fan_gpio_controller.set_fan_speed(speed, False)
-        bedroom_fan.fan_speed = speed
-        bedroom_fan.fan_speed_state = FanSpeedState.ON
     #Fan Light Flip messages
     elif message.topic == "fanControl/FlipBedroom":
         print_message(message)
