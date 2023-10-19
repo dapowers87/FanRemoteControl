@@ -28,7 +28,7 @@ class MqttController:
         self.__mqtt_client.on_message = self.on_message
         self.__mqtt_client.on_connect = self.on_connect
         self.__mqtt_client.on_disconnect = self.on_disconnect
-        self.__mqtt_client.connect("192.168.1.157", 1883)
+        self.__mqtt_client.connect("m93p", 1883)
         self.__mqtt_client.loop_start()       #connect to broker
 
         while not self.connected:    #Wait for connection
