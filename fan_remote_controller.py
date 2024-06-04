@@ -40,13 +40,13 @@ def message_parser(message):
         
         if message.payload == "ON" and office_fan.fan_light == FanLight.OFF or message.payload == "OFF" and office_fan.fan_light == FanLight.ON: 
             fan_gpio_controller.toggle_light(True)
-            toggle_fan_light_state(office_fan)            
+            toggle_fan_light_state(office_fan, True)            
     elif message.topic == "fanControl/BedroomFan/light/set":
         print_message(message)
         
         if message.payload == "ON" and bedroom_fan.fan_light == FanLight.OFF or message.payload == "OFF" and bedroom_fan.fan_light == FanLight.ON: 
             fan_gpio_controller.toggle_light(False)
-            toggle_fan_light_state(bedroom_fan)
+            toggle_fan_light_state(bedroom_fan, False)
 
     #Fan On/Off messages
     elif message.topic == "fanControl/OfficeFan/fan/on/set":
@@ -93,10 +93,10 @@ def message_parser(message):
     #Fan Light Flip messages
     elif message.topic == "fanControl/FlipBedroom":
         print_message(message)
-        toggle_fan_light_state(bedroom_fan)
+        toggle_fan_light_state(bedroom_fan, False)
     elif message.topic == "fanControl/FlipOffice":
         print_message(message)
-        toggle_fan_light_state(office_fan)
+        toggle_fan_light_state(office_fan, True)
         
 def get_fan_speed_number(fan_speed):
         if fan_speed == FanSpeed.LOW:
@@ -118,21 +118,66 @@ def publish_fan_state():
         m_client.publish("fanControl/BedroomFan/fan/light/state", bedroom_fan.fan_light.name)        
         time.sleep(1)
 
-def toggle_fan_light_state(fan):
+def write_boolean_to_file(boolean_value, filename):
+  """Writes a boolean value to a file as a string.
+
+  Args:
+    boolean_value: The boolean value to be written.
+    filename: The name of the file to write to.
+  """
+  with open(filename, 'w') as file:
+    file.write(str(boolean_value))
+
+def toggle_fan_light_state(fan, is_office):
     if fan.fan_light == FanLight.ON:
         fan.fan_light = FanLight.OFF
     else:
         fan.fan_light = FanLight.ON
+
+    if is_office:
+        write_boolean_to_file(fan.fan_light == FanLight.ON, "office_state")
+    else:
+        write_boolean_to_file(fan.fan_light == FanLight.ON, "bedroom_state") 
+
     
 def office_fan_light_state_override(channel):
-    toggle_fan_light_state(office_fan)
+    toggle_fan_light_state(office_fan, True)
 
 def bedroom_fan_light_state_override(channel):
-    toggle_fan_light_state(bedroom_fan)
+    toggle_fan_light_state(bedroom_fan, False)
 
+def read_boolean_from_file(filename):
+  """Reads a boolean value from a file that contains a string representation.
+
+  Args:
+    filename: The name of the file to read from.
+
+  Returns:
+    The boolean value read from the file, or None if the file is empty or the value is invalid.
+  """
+  try:
+    with open(filename, 'r') as file:
+      data = file.read().strip()  # Read and remove leading/trailing whitespace
+      if data:  # Check if there's any data in the file
+        return data.lower() == 'true'  # Convert to lowercase and compare
+      else:
+        return None  # Handle empty file
+  except FileNotFoundError:
+    print(f"Error: File '{filename}' not found.")
+    return None
+  
 try:
     office_fan = Fan()
+    if read_boolean_from_file("office"):
+        office_fan.fan_light = FanLight.ON
+    else: 
+        office_fan.fan_light = FanLight.OFF
+        
     bedroom_fan = Fan()
+    if read_boolean_from_file("bedroom"):
+        bedroom_fan.fan_light = FanLight.ON
+    else: 
+        bedroom_fan.fan_light = FanLight.OFF
     
     fan_gpio_controller.bedroom_fan_function = bedroom_fan_light_state_override
     fan_gpio_controller.office_fan_function = office_fan_light_state_override
