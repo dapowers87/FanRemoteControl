@@ -207,7 +207,7 @@ def write_enum_to_file(enum_value, filename):
     filename: The name of the file to write to.
   """
   with open(filename, 'w') as file:
-    file.write(str(enum_value))
+    file.write(str(enum_value.name))
 
 try:
     office_fan = Fan()
