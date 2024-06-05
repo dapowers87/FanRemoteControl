@@ -178,7 +178,7 @@ def read_fanlight_from_file(filename):
         return FanLight[enum_data]
   except (FileNotFoundError, KeyError):
     print(f"Error: Couldn't read enum data from '{filename}'.")
-    return None
+    return FanLight.OFF
   
 def read_fanspeed_from_file(filename):
   try:
@@ -187,7 +187,7 @@ def read_fanspeed_from_file(filename):
         return FanSpeed[enum_data]
   except (FileNotFoundError, KeyError):
     print(f"Error: Couldn't read enum data from '{filename}'.")
-    return None
+    return FanSpeed.LOW
 
 def read_fanspeedstate_from_file(filename):
   try:
@@ -196,7 +196,7 @@ def read_fanspeedstate_from_file(filename):
         return FanSpeedState[enum_data]
   except (FileNotFoundError, KeyError):
     print(f"Error: Couldn't read enum data from '{filename}'.")
-    return None
+    return FanSpeedState.OFF
 
 def write_enum_to_file(enum_value, filename):
   """Writes the string representation of an enum member to a file.
