@@ -105,6 +105,12 @@ def get_fan_speed_number(fan_speed):
             return 2
         elif fan_speed == FanSpeed.HIGH:
             return 3
+        
+def persist_state():
+    while True:
+        write_boolean_to_file(office_fan.fan_light == FanLight.ON, "/home/david/fan_states/office_state")
+        write_boolean_to_file(bedroom_fan.fan_light == FanLight.ON, "/home/david/fan_states/bedroom_state") 
+        time.sleep(1)
 
 def publish_fan_state():
     while True:
@@ -133,13 +139,7 @@ def toggle_fan_light_state(fan, is_office):
         fan.fan_light = FanLight.OFF
     else:
         fan.fan_light = FanLight.ON
-
-    # if is_office:
-    #     write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/office_state")
-    # else:
-    #     write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/bedroom_state") 
-
-    
+     
 def office_fan_light_state_override(channel):
     toggle_fan_light_state(office_fan, True)
 
@@ -168,21 +168,25 @@ def read_boolean_from_file(filename):
   
 try:
     office_fan = Fan()
-    # if read_boolean_from_file("/home/david/office_state"):
-    #     office_fan.fan_light = FanLight.ON
-    # else: 
-    #     office_fan.fan_light = FanLight.OFF
+    if read_boolean_from_file("/home/david/fan_states/office_state"):
+        office_fan.fan_light = FanLight.ON
+    else: 
+        office_fan.fan_light = FanLight.OFF
 
     bedroom_fan = Fan()
-    # if read_boolean_from_file("/home/david/bedroom_state"):
-    #     bedroom_fan.fan_light = FanLight.ON
-    # else: 
-    #     bedroom_fan.fan_light = FanLight.OFF
+    if read_boolean_from_file("/home/david/fan_states/bedroom_state"):
+        bedroom_fan.fan_light = FanLight.ON
+    else: 
+        bedroom_fan.fan_light = FanLight.OFF
     
     fan_gpio_controller.bedroom_fan_function = bedroom_fan_light_state_override
     fan_gpio_controller.office_fan_function = office_fan_light_state_override
     
     fan_gpio_controller.initialize_pins()
+
+    persistThread = Thread(target = persist_state)
+    persistThread.daemon = True
+    persistThread.start()
     
     buttonThread = Thread(target = fan_gpio_controller.process_queue)
     buttonThread.daemon = True
