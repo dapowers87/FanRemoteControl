@@ -108,6 +108,7 @@ def get_fan_speed_number(fan_speed):
         
 def persist_state():
     while True:
+        print("Saving out states...")
         write_enum_to_file(office_fan.fan_light, "/home/david/fan_states/office_state")
         write_enum_to_file(office_fan.fan_speed, "/home/david/fan_states/office_fanspeed")
         write_enum_to_file(office_fan.fan_speed_state, "/home/david/fan_states/office_fanspeedstate")
