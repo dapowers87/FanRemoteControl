@@ -108,8 +108,13 @@ def get_fan_speed_number(fan_speed):
         
 def persist_state():
     while True:
-        write_boolean_to_file(office_fan.fan_light == FanLight.ON, "/home/david/fan_states/office_state")
-        write_boolean_to_file(bedroom_fan.fan_light == FanLight.ON, "/home/david/fan_states/bedroom_state") 
+        write_enum_to_file(office_fan.fan_light, "/home/david/fan_states/office_state")
+        write_enum_to_file(office_fan.fan_speed, "/home/david/fan_states/office_fanspeed")
+        write_enum_to_file(office_fan.fan_speed_state, "/home/david/fan_states/office_fanspeedstate")
+
+        write_enum_to_file(bedroom_fan.fan_light, "/home/david/fan_states/bedroom_state")
+        write_enum_to_file(bedroom_fan.fan_speed, "/home/david/fan_states/bedroom_fanspeed")
+        write_enum_to_file(bedroom_fan.fan_speed_state, "/home/david/fan_states/bedroom_fanspeedstate")
         time.sleep(1)
 
 def publish_fan_state():
@@ -165,19 +170,54 @@ def read_boolean_from_file(filename):
   except FileNotFoundError:
     print(f"Error: File '{filename}' not found.")
     return None
+
+def read_fanlight_from_file(filename):
+  try:
+    with open(filename, 'r') as file:
+        enum_data = file.readline()         
+        return FanLight[enum_data]
+  except (FileNotFoundError, KeyError):
+    print(f"Error: Couldn't read enum data from '{filename}'.")
+    return None
   
+def read_fanspeed_from_file(filename):
+  try:
+    with open(filename, 'r') as file:
+        enum_data = file.readline()         
+        return FanSpeed[enum_data]
+  except (FileNotFoundError, KeyError):
+    print(f"Error: Couldn't read enum data from '{filename}'.")
+    return None
+
+def read_fanspeedstate_from_file(filename):
+  try:
+    with open(filename, 'r') as file:
+        enum_data = file.readline()         
+        return FanSpeedState[enum_data]
+  except (FileNotFoundError, KeyError):
+    print(f"Error: Couldn't read enum data from '{filename}'.")
+    return None
+
+def write_enum_to_file(enum_value, filename):
+  """Writes the string representation of an enum member to a file.
+
+  Args:
+    enum_value: The enum member to be written.
+    filename: The name of the file to write to.
+  """
+  with open(filename, 'w') as file:
+    file.write(str(enum_value))
+
 try:
     office_fan = Fan()
-    if read_boolean_from_file("/home/david/fan_states/office_state"):
-        office_fan.fan_light = FanLight.ON
-    else: 
-        office_fan.fan_light = FanLight.OFF
+    office_fan.fan_light = read_fanlight_from_file("/home/david/fan_states/office_light_state")
+    office_fan.fan_speed = read_fanspeed_from_file("/home/david/fan_states/office_fanspeed")
+    office_fan.fan_speed_state = read_fanspeedstate_from_file("/home/david/fan_states/office_fanspeedstate")
 
     bedroom_fan = Fan()
-    if read_boolean_from_file("/home/david/fan_states/bedroom_state"):
-        bedroom_fan.fan_light = FanLight.ON
-    else: 
-        bedroom_fan.fan_light = FanLight.OFF
+    bedroom_fan.fan_light = read_fanlight_from_file("/home/david/fan_states/bedroom_light_state")
+    bedroom_fan.fan_speed = read_fanspeed_from_file("/home/david/fan_states/bedroom_fanspeed")
+    bedroom_fan.fan_speed_state = read_fanspeedstate_from_file("/home/david/fan_states/bedroom_fanspeedstate")
     
     fan_gpio_controller.bedroom_fan_function = bedroom_fan_light_state_override
     fan_gpio_controller.office_fan_function = office_fan_light_state_override
