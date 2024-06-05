@@ -134,10 +134,10 @@ def toggle_fan_light_state(fan, is_office):
     else:
         fan.fan_light = FanLight.ON
 
-    if is_office:
-        write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/office_state")
-    else:
-        write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/bedroom_state") 
+    # if is_office:
+    #     write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/office_state")
+    # else:
+    #     write_boolean_to_file(fan.fan_light == FanLight.ON, "/home/david/bedroom_state") 
 
     
 def office_fan_light_state_override(channel):
@@ -168,16 +168,16 @@ def read_boolean_from_file(filename):
   
 try:
     office_fan = Fan()
-    if read_boolean_from_file("/home/david/office_state"):
-        office_fan.fan_light = FanLight.ON
-    else: 
-        office_fan.fan_light = FanLight.OFF
+    # if read_boolean_from_file("/home/david/office_state"):
+    #     office_fan.fan_light = FanLight.ON
+    # else: 
+    #     office_fan.fan_light = FanLight.OFF
 
     bedroom_fan = Fan()
-    if read_boolean_from_file("/home/david/bedroom_state"):
-        bedroom_fan.fan_light = FanLight.ON
-    else: 
-        bedroom_fan.fan_light = FanLight.OFF
+    # if read_boolean_from_file("/home/david/bedroom_state"):
+    #     bedroom_fan.fan_light = FanLight.ON
+    # else: 
+    #     bedroom_fan.fan_light = FanLight.OFF
     
     fan_gpio_controller.bedroom_fan_function = bedroom_fan_light_state_override
     fan_gpio_controller.office_fan_function = office_fan_light_state_override
