@@ -113,7 +113,7 @@ def persist_state():
         write_enum_to_file(office_fan.fan_speed, "/home/david/fan_states/office_fanspeed")
         write_enum_to_file(office_fan.fan_speed_state, "/home/david/fan_states/office_fanspeedstate")
 
-        write_enum_to_file(bedroom_fan.fan_light, "/home/david/fan_states/office_light_state")
+        write_enum_to_file(bedroom_fan.fan_light, "/home/david/fan_states/bedroom_light_state")
         write_enum_to_file(bedroom_fan.fan_speed, "/home/david/fan_states/bedroom_fanspeed")
         write_enum_to_file(bedroom_fan.fan_speed_state, "/home/david/fan_states/bedroom_fanspeedstate")
         time.sleep(1)
