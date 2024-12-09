@@ -39,10 +39,10 @@ class MqttController:
     def wait_for_host_to_be_online(self):
         while True: # wait until a ping is returned from the host
             if ping(self.host) is not None:
-                print("Host is reachable via ping")
+                print(f"{host}: is reachable via ping!")
                 break
             else:
-                print("Host is not reachable via ping. Waiting 5 seconds...")
+                print(f"{host}: is not reachable via ping. Waiting 5 seconds...")
                 time.sleep(5)
 
         self.ping_port(self.host, 1883)
