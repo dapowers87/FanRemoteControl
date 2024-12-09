@@ -24,7 +24,7 @@ class MqttController:
     def on_message(self, client, userdata, message):
         self.__message_parser(message)
 
-    def ping_port(host, port):
+    def ping_port(self, host, port):
         while True:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 sock.settimeout(5)  # Timeout after 5 seconds
@@ -36,7 +36,7 @@ class MqttController:
                     print(f"{host}:{port} is still offline. Retrying in 5 seconds...")
                     time.sleep(5)
 
-    def wait_for_host_to_be_online():
+    def wait_for_host_to_be_online(self):
         while True: # wait until a ping is returned from the host
             if ping(host) is not None:
                 print("Host is reachable via ping")
@@ -45,7 +45,7 @@ class MqttController:
                 print("Host is not reachable via ping. Waiting 5 seconds...")
                 time.sleep(5)
 
-        ping_port(host, 1883)
+        self.ping_port(host, 1883)
 
     def connect_to_mqtt(self):        
         print('Connecting to MQTT')
