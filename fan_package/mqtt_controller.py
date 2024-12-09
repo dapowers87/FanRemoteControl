@@ -58,7 +58,7 @@ class MqttController:
 
         self.wait_for_host_to_be_online()
         
-        self.__mqtt_client.connect(host, 1883)
+        self.__mqtt_client.connect(self.host, 1883)
         self.__mqtt_client.loop_start()       #connect to broker
 
         while not self.connected:    #Wait for connection
