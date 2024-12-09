@@ -56,7 +56,7 @@ class MqttController:
         self.__mqtt_client.on_connect = self.on_connect
         self.__mqtt_client.on_disconnect = self.on_disconnect 
 
-        wait_for_host_to_be_online()
+        self.wait_for_host_to_be_online()
         
         self.__mqtt_client.connect(host, 1883)
         self.__mqtt_client.loop_start()       #connect to broker
@@ -74,7 +74,7 @@ class MqttController:
         timeout = 1
         while not self.connected:    #Wait for connection
             try:
-                wait_for_host_to_be_online()
+                self.wait_for_host_to_be_online()
                 
                 if reattemptConnect:
                     self.__mqtt_client.reconnect()
